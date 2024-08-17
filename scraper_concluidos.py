@@ -1,4 +1,4 @@
-from selenium import webdriver
+from seleniumwire import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.chrome.service import Service
@@ -109,6 +109,13 @@ def download_wait(timeout:int, nfiles:int=1):
         delete_files()
 
 
+def interceptor(request):
+    global actual_page
+    if "expedientes?rows" in request.url:
+        request.querystring = f'rows=100&page={actual_page}'
+        print(actual_page)
+
+
 def set_driver():
     """Initialize a webdriver to simulate chrome browser"""
     global driver
@@ -133,6 +140,7 @@ def set_driver():
     driver = webdriver.Chrome(options=options,
                 service=Service(executable_path=executable_path),
             )
+    driver.request_interceptor = interceptor
     print("driver correctamente inicializado.")
 
 
@@ -427,8 +435,7 @@ def get_page_prices():
             print(f"Error formateando la fecha {fecha_pub} de la op:\n{uri}")
             fecha_pub = today
         
-    # --ECONOMICOS-- //span[text()="ECONÓMICOS"]/ancestor::p-tabview//button[contains(@class,"p-paginator-next")]
-    
+    # --ECONOMICOS--
     economicos_list = []
     economic_ids = []
     #Itera páginas
@@ -592,7 +599,7 @@ def scrape_page(page_numb):
         n_proc = rows[i].text
 
         if procedimientos_guardados['num_proc'].str.contains(n_proc).any() or n_proc in num_proc_added:
-            print(f"\nprocedimiento:{i} - {n_proc} ya está en la bdd")
+            print(f"\nprocedimiento:{i+1} - {n_proc} ya está en la bdd")
             continue
 
         # Entra a la página de detalle
@@ -656,7 +663,7 @@ def scrape_page(page_numb):
 
 def paginate():
     """Itera las páginas disponibles una por una"""
-    global driver, main_url, gobernanza
+    global driver, main_url, gobernanza, actual_page
 
     print(f"Entrando a la pagina principal: {main_url}")
     driver.get(main_url)
@@ -670,6 +677,7 @@ def paginate():
     set_filters()
     
     #PAGINACIÓN
+    actual_page = 1
     for i in range(1, 100):
         """Itera las páginas de anuncios, por cada página de detalle
         obtiene la información y la guarda en la bdd.
@@ -685,6 +693,7 @@ def paginate():
             break
         else:
             print(f"Cambiando a página: {i+1}")
+            actual_page += 1
             ActionChains(driver).scroll_to_element(next_page_btn)\
                 .pause(1).click(next_page_btn).perform()
             espera_carga_componenete()
@@ -698,8 +707,9 @@ def main():
     agregados, inicializa el driver(chrome) e inicia el proceso de páginacion"""
     global main_url, today, driver, anexos_dir,anuncio, gobernanza, claves, conc_file_name,\
            rows_aded, procedimientos_guardados, economicos_file_name, precios_file_name,\
-            anexos_full_dir, anexos_file_name, num_proc_added
+           anexos_full_dir, anexos_file_name, num_proc_added, actual_page
     
+    actual_page = 1
     num_proc_added = [] #guarda número de procedimiento de los anuncios agregados a la base de datos para evitar repeticiones
     anuncio = {} #Sirve para anexos
     anexos_full_dir = r"C:\Users\juan-\Desktop\CNET Scrapping 2024\temp\\"
