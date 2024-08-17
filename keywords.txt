@@ -1,0 +1,90 @@
+Vales
+Despensa
+Gasolina
+Combustible
+Tarjeta
+Monedero
+Vestimenta
+Viatico
+Regalo
+Restaurante
+Ropa
+Viaje
+Mantenimiento
+Vehículo
+Mtto
+Preventivo
+Correctivo
+Premium
+Magna
+Fin de año
+Abarrote(S)
+Aguinaldo(S)
+Alimentación(Es)
+Alimenta
+Alimentic(*)
+Alimento(S)
+Arillo(S)
+Bono(S)
+Canjeable(S)
+Cena(S)
+Combustible(S)
+Comedor(Es)
+Comida(S)
+Cupón(Es)
+Desayun(*)
+Despensa(S)
+Diesel
+Dispersión(Es)
+Enser(Es)
+Fin Año(S)
+Gasolina(S)
+Juguete(S)
+Lubrica(*)
+Medio(S)
+Pago(S)
+Monedero(S)
+Premio(S)
+Previsión(Es)
+Recompensa(S)
+Restaurant(*)
+Ropa
+Subsistencia(S)
+Tarjeta(S)
+Chip(S)
+Electronic(*)
+Inteligente(S)
+Magnetic(*)
+Uniforme(S)
+Útiles Escolar(Es)
+Vale(S)
+Vestido(S)
+Vestimenta
+Vestir
+Vestuari(S)
+Viatico(S)
+Viveres
+Apoyo(S)
+Asistencia(S)
+Ayuda(S)
+Gasto(S)
+Prestacion(Es)
+Programa(*)
+Laboral(*)
+Social(Es)
+Trabajo(S)
+Incentivo(S)
+Aditivo
+Diesel
+Apoyos Económicos
+Apoyo Monetarios
+Fintech
+Viáticos
+Control De Gastos
+Caja(S) Chica(S)
+Atm
+Retiro en efectivo
+ATM
+Cajero automatico
+Tarjetas
+sello de caja
