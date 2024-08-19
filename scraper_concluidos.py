@@ -123,6 +123,7 @@ def set_driver():
     options = webdriver.ChromeOptions()
     options.add_experimental_option("useAutomationExtension", False)
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    options.add_experimental_option('excludeSwitches', ['enable-logging'])
     #options.add_argument("--headless")
     #options.add_argument("--incognito")
     options.add_argument("--window-size=1920, 1080")
