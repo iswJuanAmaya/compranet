@@ -557,7 +557,40 @@ def get_page_prices():
         except TimeoutException:
             print(f"no cargó {num_cont}")
             continue
-
+        
+        xp = '//*[contains(text(),"Código de contrato: ")]/parent::label/following-sibling::p-table//div[contains(@class,"unfrozen")]//thead/tr/th'
+        cabeceras = driver.find_elements(By.XPATH, xp)
+        if cabeceras[0].text == 'Descripción detallada' and cabeceras[3].text == 'Precio unitario sin impuestos' and\
+        cabeceras[4].text == 'Subtotal' and cabeceras[7].text == 'Total':
+            ind_desc = 0
+            ind_prec = 3
+            ind_subt = 4
+            ind_tota = 7
+            ind_cant_minima = False
+        elif cabeceras[0].text == 'Descripción detallada' and cabeceras[2].text == 'Precio unitario sin impuestos' and\
+        cabeceras[3].text == 'Monto de la Oferta' and cabeceras[6].text == 'Monto total de la oferta':
+            print_w("  layout modal tipo 2")
+            ind_desc = 0
+            ind_prec = 2
+            ind_subt = 3
+            ind_tota = 6
+            ind_cant_minima = False
+        elif cabeceras[0].text == 'Descripción detallada' and cabeceras[4].text == 'Precio unitario sin impuestos' and\
+        cabeceras[5].text == 'Monto total cantidad mínima' and cabeceras[6].text == 'Monto total cantidad máxima':
+            print_w("  layout modal tipo 3 - cant minima")
+            ind_desc = 0
+            ind_prec = 4
+            ind_cant_minima = 5
+            ind_tota = 6
+            ind_subt = False
+        else:
+            print_e("  layout NO ESPERADO")
+            ind_desc = 10
+            ind_prec = 13
+            ind_subt = 14
+            ind_tota = 17
+            ind_cant_minima = False
+            
         #Obtiene las filas de la tabla de detalle(cada fila se dividide en dos columnas grandotas)
         detalles = driver.find_elements(By.XPATH, 
             '//*[contains(text(),"Código de contrato: ")]/parent::label/following-sibling::p-table//div[contains(@class,"unfrozen")]//tbody/tr')
@@ -566,39 +599,6 @@ def get_page_prices():
         for clave, detalle in zip(detalles_p, detalles):
             col = clave.find_elements(By.XPATH,"./td")
             clave_cucop = col[1].text
-
-            xp = '//*[contains(text(),"Código de contrato: ")]/parent::label/following-sibling::p-table//div[contains(@class,"unfrozen")]//thead/tr/th'
-            cabeceras = driver.find_elements(By.XPATH, xp)
-            if cabeceras[0].text == 'Descripción detallada' and cabeceras[3].text == 'Precio unitario sin impuestos' and\
-            cabeceras[4].text == 'Subtotal' and cabeceras[7].text == 'Total':
-                ind_desc = 0
-                ind_prec = 3
-                ind_subt = 4
-                ind_tota = 7
-                ind_cant_minima = False
-            elif cabeceras[0].text == 'Descripción detallada' and cabeceras[2].text == 'Precio unitario sin impuestos' and\
-            cabeceras[3].text == 'Monto de la Oferta' and cabeceras[6].text == 'Monto total de la oferta':
-                print_w("  layout modal tipo 2")
-                ind_desc = 0
-                ind_prec = 2
-                ind_subt = 3
-                ind_tota = 6
-                ind_cant_minima = False
-            elif cabeceras[0].text == 'Descripción detallada' and cabeceras[4].text == 'Precio unitario sin impuestos' and\
-            cabeceras[5].text == 'Monto total cantidad mínima' and cabeceras[6].text == 'Monto total cantidad máxima':
-                print_w("  layout modal tipo 3 - cant minima")
-                ind_desc = 0
-                ind_prec = 4
-                ind_cant_minima = 5
-                ind_tota = 6
-                ind_subt = False
-            else:
-                print_e("  layout NO ESPERADO")
-                ind_desc = 10
-                ind_prec = 13
-                ind_subt = 14
-                ind_tota = 17
-                ind_cant_minima = False
 
             col = detalle.find_elements(By.XPATH,"./td")
             try:
