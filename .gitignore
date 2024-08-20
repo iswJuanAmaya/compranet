@@ -2,3 +2,5 @@
 /venv
 /pruebas
 *.png
+logs.txt
+orquestador.py

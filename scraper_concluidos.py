@@ -521,13 +521,13 @@ def get_page_prices():
             ind_fech_i = 5
             ind_fech_f = 6
         elif cabeceras[2].text == 'Licitante' and cabeceras[3].text == 'Número de contrato':
-            print_w("layout tipo 2")
+            print_w("  layout tipo 2")
             ind_prov = 2
             ind_num_cont = 3
             ind_fech_i = 6
             ind_fech_f = 7
     except Exception as e:
-        print_e(f"falló obteniendo cabeceras de dato de contrato\n{e}")
+        print_e(f"  falló obteniendo cabeceras de dato de contrato\n{e}")
         ind_prov = 1
         ind_num_cont = 2
         ind_fech_i = 5
@@ -547,7 +547,7 @@ def get_page_prices():
         fecha_fin = col[ind_fech_f].text
         #titulo_cont = col[3].tex
         
-        ActionChains(driver).scroll_to_element(col[2]).move_to_element(col[2])\
+        ActionChains(driver).scroll_to_element(col[ind_num_cont]).move_to_element(col[ind_num_cont])\
                             .pause(1).click().perform()
         
         #Esto porque la página a veces deja de cargar o tarda demasiado
@@ -578,26 +578,26 @@ def get_page_prices():
                 ind_cant_minima = False
             elif cabeceras[0].text == 'Descripción detallada' and cabeceras[2].text == 'Precio unitario sin impuestos' and\
             cabeceras[3].text == 'Monto de la Oferta' and cabeceras[6].text == 'Monto total de la oferta':
-                print_w("layout modal tipo 2")
+                print_w("  layout modal tipo 2")
                 ind_desc = 0
                 ind_prec = 2
                 ind_subt = 3
                 ind_tota = 6
                 ind_cant_minima = False
             elif cabeceras[0].text == 'Descripción detallada' and cabeceras[4].text == 'Precio unitario sin impuestos' and\
-            cabeceras[5].text == 'Monto total cantidad mínima' and cabeceras[6].text == 'Monto total de la oferta':
-                print_w("layout modal tipo 3 - cant minima")
+            cabeceras[5].text == 'Monto total cantidad mínima' and cabeceras[6].text == 'Monto total cantidad máxima':
+                print_w("  layout modal tipo 3 - cant minima")
                 ind_desc = 0
                 ind_prec = 4
                 ind_cant_minima = 5
                 ind_tota = 6
                 ind_subt = False
             else:
-                print_e("layout modal por defecto")
-                ind_desc = 0
-                ind_prec = 3
-                ind_subt = 4
-                ind_tota = 7
+                print_e("  layout NO ESPERADO")
+                ind_desc = 10
+                ind_prec = 13
+                ind_subt = 14
+                ind_tota = 17
                 ind_cant_minima = False
 
             col = detalle.find_elements(By.XPATH,"./td")
@@ -610,6 +610,8 @@ def get_page_prices():
             except IndexError: 
                 """Esto detecta layouts diferentes, este layout se guarda en la columna Dependencia de concluidos
                    para poder definir una solución en el futuro."""
+                anormal_columns = ",".join([c.text for c in cabeceras])
+                print_e(anormal_columns)
                 columnas_anormales = driver.find_elements(By.XPATH, 
                     '//*[contains(text(),"Código de contrato: ")]/parent::label/following-sibling::p-table//div[contains(@class,"unfrozen")]//thead/tr/th')
                 anormal_columns = ",".join([c.text for c in columnas_anormales])
@@ -618,6 +620,7 @@ def get_page_prices():
                 prec_unit_sin_impuestos = ""
                 subtotal = ""
                 total = ""
+                total_cant_min = ""
             
             #Busca la clave compendio en economicos, se relaciona por clave cucop. 
             claves_compendio = [i['Clave compendio'] for i in economicos_list if clave_cucop in i["Clave CUCoP+"]]
