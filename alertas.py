@@ -163,7 +163,8 @@ def generate_df_to_fill_body(df:pd.DataFrame, tipo:str) -> pd.DataFrame:
 
     if tipo == "diario":
         #selecciona las oportunidades escrapeadas hoy y que tengan alerta
-        nuevas_alertas = df\
+        nuevas_alertas = df[['Descripción detallada','is_alert_for_keywords','uri','fecha_pub','fecha_presentacion',\
+                             'uc','desc_det_anuncio','Dependencia','Número del procedimiento o contratación']]\
                             [
                                 (df['scrapped_day'] == today) & (df['is_alert_for_keywords'] != "False") 
                             ]
@@ -175,15 +176,15 @@ def generate_df_to_fill_body(df:pd.DataFrame, tipo:str) -> pd.DataFrame:
                                 ]
         
         msg = f"{len(nuevas_alertas)} economicos con alerta por keyword encontrados dentro de {len(nuevas_oportunidades)} economicos raspados"
-            
         print(msg)
+
         return nuevas_alertas, msg
     
+
     elif tipo == "semanal":
 
-        #['22/03/2023','21/03/2023','20/03/2023','19/03/2023','18/03/2023','17/03/2023','16/03/2023']
+        #['21/03/2023','20/03/2023','19/03/2023','18/03/2023','17/03/2023','16/03/2023']
         fechas_semanales = [
-                today_datetime.strftime("%d/%m/%Y"),
                 (today_datetime - timedelta(1)).strftime("%d/%m/%Y"), 
                 (today_datetime - timedelta(2)).strftime("%d/%m/%Y"),
                 (today_datetime - timedelta(3)).strftime("%d/%m/%Y"),
@@ -193,24 +194,25 @@ def generate_df_to_fill_body(df:pd.DataFrame, tipo:str) -> pd.DataFrame:
             ]
         
         #selecciona las oportunidades escrapeadas sabado, domingo y lunes y que tengan alerta
-        nuevas_alertas = df[['url_detail_id','title','source','location','opening_date','closing_date']]\
-            [
-                (df['scrapped_day'].isin(fechas_semanales)) & (df['is_alert'] == True)
-            ]
+        nuevas_alertas = df[['Descripción detallada','is_alert_for_keywords','uri','fecha_pub','fecha_presentacion',\
+                             'uc','desc_det_anuncio','Dependencia','Número del procedimiento o contratación']]\
+                            [
+                                (df['scrapped_day'].isin(fechas_semanales)) & (df['is_alert_for_keywords'] != "False")
+                            ]
         
         #selecciona las oportunidades escrapeadas sabado, domingo y lunes 
-        nuevas_oportunidades = df[['url_detail_id','title']]\
+        nuevas_oportunidades = df[['Descripción detallada','is_alert_for_keywords','uri','fecha_pub','fecha_presentacion',\
+                                    'uc','desc_det_anuncio','Dependencia','Número del procedimiento o contratación']]\
                                 [
                                     (df['scrapped_day'].isin(fechas_semanales)) 
                                 ]
         
-        msg = f""" {len(nuevas_alertas)} \
-            alertas detectadas en {len(nuevas_oportunidades)} oportunidades minadas"""
-            
+        msg = f"{len(nuevas_alertas)} economicos con alerta por keyword encontrados dentro de {len(nuevas_oportunidades)} economicos raspados"
         print(msg)
         
         return nuevas_alertas, msg
     
+
     elif tipo == "lunes":
 
         #['20/03/2023', '19/03/2023', '18/03/2023']
@@ -221,20 +223,20 @@ def generate_df_to_fill_body(df:pd.DataFrame, tipo:str) -> pd.DataFrame:
             ]
         
         #selecciona las oportunidades escrapeadas sabado, domingo y lunes y que tengan alerta
-        nuevas_alertas = df[['url_detail_id','title','source','location','opening_date','closing_date']]\
-            [
-                (df['scrapped_day'].isin(sab_dom_lun)) & (df['is_alert'] == True)
-            ]
+        nuevas_alertas = df[['Descripción detallada','is_alert_for_keywords','uri','fecha_pub','fecha_presentacion',\
+                             'uc','desc_det_anuncio','Dependencia','Número del procedimiento o contratación']]\
+                            [
+                                (df['scrapped_day'].isin(sab_dom_lun)) & (df['is_alert_for_keywords'] != "False")
+                            ]
         
         #selecciona las oportunidades escrapeadas sabado, domingo y lunes 
-        nuevas_oportunidades = df[['url_detail_id','title']]\
+        nuevas_oportunidades = df[['Descripción detallada','is_alert_for_keywords','uri','fecha_pub','fecha_presentacion',\
+                                    'uc','desc_det_anuncio','Dependencia','Número del procedimiento o contratación']]\
                                 [
                                     (df['scrapped_day'].isin(sab_dom_lun)) 
                                 ]
         
-        msg = f""" {len(nuevas_alertas)} \
-            alertas detectadas en {len(nuevas_oportunidades)} oportunidades minadas"""
-            
+        msg = f"{len(nuevas_alertas)} economicos con alerta por keyword encontrados dentro de {len(nuevas_oportunidades)} economicos raspados"
         print(msg)
         
         return nuevas_alertas, msg
@@ -249,7 +251,6 @@ def main():
 
     2) Lee el archivo de alertas y lo convierte en un dataframe con las alertas correspondientes, 
     al final envia el correo y si hay alertas
-    
     """
     global sender, recipients, password, today, today_datetime
     sender = "alquimiadigital23@gmail.com"
@@ -283,20 +284,20 @@ def main():
             print("no hay alertas el día de hoy")
 
         #Jueves
-        # if today_datetime.weekday() == 3:
-        #     print("----Jueves----")
-        #     print("Generando dataFrame con las alertas de esta semana")
-        #     nuevas_alertas, msg = generate_df_to_fill_body(df, "semanal")
+        if today_datetime.weekday() == 3:
+            print("----Jueves----")
+            print("Generando dataFrame con las alertas de esta semana")
+            nuevas_alertas, msg = generate_df_to_fill_body(df, "semanal")
 
-        #     cant_alertas = len(nuevas_alertas)
-        #     if cant_alertas > 0:
-        #         print(f"enviando {cant_alertas} alertas")
-        #         body_html_sem = generate_body(nuevas_alertas, msg)
-        #         subject = "Resumen de oportunidades semanal"
-        #         send_email(subject, body_html_sem, sender, recipients, password)
+            cant_alertas = len(nuevas_alertas)
+            if cant_alertas > 0:
+                print(f"enviando {cant_alertas} alertas")
+                body_html_sem = generate_body(nuevas_alertas, msg)
+                subject = "Resumen de oportunidades semanal"
+                send_email(subject, body_html_sem, sender, recipients, password)
 
-        #     else:
-        #         print("no hay alertas el día de hoy")
+            else:
+                print("no hay alertas el día de hoy")
 
     #lunes
     elif today_datetime.weekday() == 0:

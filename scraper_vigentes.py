@@ -438,7 +438,6 @@ def get_page_prices():
     return economicos_list
 
 
-@timing_val
 def scrape_page(page_numb):
     """Itera todos los renglones del landing page,
     uno por uno da click en el para extraer su informacion
@@ -549,6 +548,7 @@ def paginate():
             duerme(2, 6)
 
 
+@timing_val
 def main():
     """ Declara variables globales que se usan en diferentes funciones
     carga identificadores unicos de la bdd para evitar raspar anuncios ya 
@@ -576,7 +576,6 @@ def main():
               '37504', '37601', '37602', '37701', '37801', '37802', '37901', '38101', '38102', 
               '38103', '38201', '38301', '38401', '38501', '44101', '44102', '44103', '44104', 
               '34101']
-    claves = ['15901', '26101', '26102', '26103', '15401', '21101', '37501', '37502', '37503']
 
     keywords = ['vales','despensa','gasolina','combustible','tarjeta','monedero','vestimenta','viatico','regalo','restaurante',
                 'ropa','viaje','mantenimiento','vehiculo','mtto','preventivo','correctivo','premium','magna','fin de año',
@@ -598,10 +597,12 @@ def main():
     print("\nInicia proceso de scrapping - paginacion <----")
     paginate()
 
+    print("\n", "-----------El Robot Terminó con exito-----------")
+
 
 if __name__ == "__main__":
     #FLAG para probar y mejorar detección de errores 
-    prueba = True
+    prueba = False
 
     if prueba:
         main()
