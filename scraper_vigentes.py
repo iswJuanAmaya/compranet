@@ -597,7 +597,7 @@ def main():
     print("\nInicia proceso de scrapping - paginacion <----")
     paginate()
 
-    print("\n", "-----------El Robot Terminó con exito-----------")
+    print(f"\nSe agregaron {rows_aded} oportunidades nuevas a la bdd", "-----------El Robot Terminó con exito-----------")
 
 
 if __name__ == "__main__":

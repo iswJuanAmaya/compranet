@@ -91,7 +91,7 @@ def generate_body(alerts_df:pd.DataFrame, msg:str)->str:
         html += f"{i}. <a href='{detail_url}'>{desc_det_an}</a><br>"
         html += f"<strong>Dependencia:</strong> {dependencia}<br>" if dependencia else ""
         html += f"<strong>Unidad compradora:</strong> {unidad_comp}<br>" if unidad_comp else ""
-        html += f"<strong>Fecha y hora límite para envío de aclaraciones:</strong> {fec_pres}<br>" if fec_pres else ""
+        html += f"<strong>Fecha de entrega de propuestas:</strong> {fec_pres}<br>" if fec_pres else ""
         html += f"<strong>Fecha de publicacion:</strong> {fec_pub}<br>" if fec_pub else ""
         
         keyword_desc = []
@@ -134,11 +134,11 @@ def generate_body(alerts_df:pd.DataFrame, msg:str)->str:
                 if len(descriptions)>9:
                     break
         
-        html += f"<strong>Se encontraron {ecos_cant} economicos con los siguientes keywords:</strong> {", ".join(kw_added)}<br>"
+        html += f"<strong>Se encontraron {ecos_cant} keywords:</strong> {", ".join(kw_added)}<ul>"
         for enunciado in descriptions:
-            html += f"<strong>-></strong>{enunciado.lower()}<br>"
+            html += f"<li>{enunciado.lower()}</li>"
 
-        html += "<br>"
+        html += "</ul>"
         i += 1
 
     html += """
@@ -175,7 +175,7 @@ def generate_df_to_fill_body(df:pd.DataFrame, tipo:str) -> pd.DataFrame:
                                     (df['scrapped_day'] == today)
                                 ]
         
-        msg = f"{len(nuevas_alertas)} economicos con alerta por keyword encontrados dentro de {len(nuevas_oportunidades)} economicos raspados"
+        msg = f"{len(nuevas_alertas)} alertas encontradas en {len(nuevas_oportunidades)} oportunidades minadas"
         print(msg)
 
         return nuevas_alertas, msg
@@ -207,7 +207,7 @@ def generate_df_to_fill_body(df:pd.DataFrame, tipo:str) -> pd.DataFrame:
                                     (df['scrapped_day'].isin(fechas_semanales)) 
                                 ]
         
-        msg = f"{len(nuevas_alertas)} economicos con alerta por keyword encontrados dentro de {len(nuevas_oportunidades)} economicos raspados"
+        msg = f"{len(nuevas_alertas)} alertas encontradas en {len(nuevas_oportunidades)} oportunidades minadas"
         print(msg)
         
         return nuevas_alertas, msg
@@ -236,7 +236,7 @@ def generate_df_to_fill_body(df:pd.DataFrame, tipo:str) -> pd.DataFrame:
                                     (df['scrapped_day'].isin(sab_dom_lun)) 
                                 ]
         
-        msg = f"{len(nuevas_alertas)} economicos con alerta por keyword encontrados dentro de {len(nuevas_oportunidades)} economicos raspados"
+        msg = f"{len(nuevas_alertas)} alertas encontradas en {len(nuevas_oportunidades)} oportunidades minadas"
         print(msg)
         
         return nuevas_alertas, msg
@@ -253,9 +253,9 @@ def main():
     al final envia el correo y si hay alertas
     """
     global sender, recipients, password, today, today_datetime
-    sender = "alquimiadigital23@gmail.com"
+    sender = "gustavo@sintetiqai.com"
     recipients = ["iswjuanamaya@gmail.com", "gustavo.gilramos@gmail.com"]#, "dss.tisalud@gmail.com"
-    password = "vaillidatntojvsc" 
+    password = "dkalldlzavstssga" 
     today_datetime = date.today()
     today = date.today().strftime("%d/%m/%Y")
 
