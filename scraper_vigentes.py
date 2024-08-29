@@ -588,7 +588,7 @@ def main():
     anuncio = {} #Sirve para anexos
     anexos_full_dir = r""
     rows_aded = 0 #cantidad de anuncios agregados a la bdd
-    gobernanza = 100 #número máximo de anuncios a agregar por ejecución(la idea es evitar bloqueos permitiendo que el robot corra indefinidamente)
+    gobernanza = 120 #número máximo de anuncios a agregar por ejecución(la idea es evitar bloqueos permitiendo que el robot corra indefinidamente)
     today = date.today().strftime("%d/%m/%Y") #fecha de ejecución 
     
     #nombre de las bases de datos
@@ -638,7 +638,7 @@ if __name__ == "__main__":
             main()
             driver.close()
         except Exception as e:
-            print(f"error: {e}")
+            print(f"error general no anticipado: {e}")
             if driver:
                 driver.save_screenshot("./vg_MAIN_error.png")
                 driver.close()

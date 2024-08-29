@@ -153,7 +153,8 @@ def generate_body(alerts_df:pd.DataFrame, msg:str)->str:
                 if len(descriptions)>9:
                     break
         
-        html += f"<strong>Se encontraron {ecos_cant} keywords:</strong> {", ".join(kw_added)}<ul>"
+        cant_keywords = len(kw_added)
+        html += f"<strong>Se encontraron {cant_keywords} keywords:</strong> {", ".join(kw_added)}<ul>"
         for enunciado in descriptions:
             html += f"<li>{enunciado.lower()}</li>"
 
