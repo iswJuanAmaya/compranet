@@ -23,7 +23,11 @@ def timing_val(func):
         func(*arg, **kw)
         t2 = time.time()
         segs = int(t2 - t1)
-        print(f"tardó {segs} segs...")
+        if segs > 60:
+            minutes = str(segs/60)
+            print(f"tardó {minutes[0:5]} minutos...")
+        else:
+            print(f"tardó {segs} segs...")
         return segs
     return wrapper
 
@@ -150,21 +154,21 @@ def set_filters():
     click('//*[text()="PROCEDIMIENTO DE CONTRATACIÓN"]')
     #click('//*[text()="PROYECTO DE CONVOCATORIA"]')
 
-    print("más filtros")
-    click('//*[@label="Filtros"]/button')
+    # print("más filtros")
+    # click('//*[@label="Filtros"]/button')
 
-    print(f"-> claves: {claves}")
-    click('//*[@name="claves"]')
-    for clave in claves:
-        xp = '//p-multiselect[@name="claves"]//input[contains(@class,"filter")]'
-        fill(xp=xp, txt=clave)
-        duerme(1, 2)
+    # print(f"-> claves: {claves}")
+    # click('//*[@name="claves"]')
+    # for clave in claves:
+    #     xp = '//p-multiselect[@name="claves"]//input[contains(@class,"filter")]'
+    #     fill(xp=xp, txt=clave)
+    #     duerme(1, 2)
 
-        click(f'//*[contains(text(),"{clave}")]', dormir=False)
-        duerme(.5, 1.5)
+    #     click(f'//*[contains(text(),"{clave}")]', dormir=False)
+    #     duerme(.5, 1.5)
 
-        driver.find_element(By.XPATH, xp).clear()
-        duerme(.5,2)
+    #     driver.find_element(By.XPATH, xp).clear()
+    #     duerme(.5,2)
 
     print("buscar")
     click(xp='//span[text()="Buscar"]', dormir=False)
@@ -347,6 +351,8 @@ def get_page_prices():
     unidad_comp = get_text_by_xpath(xp='//label[text()="Unidad compradora"]/following-sibling::label')
     #Descripción detallada del procedimiento de contratación
     desc_det_anuncio = get_text_by_xpath(xp='//label[text()="Descripción detallada del procedimiento de contratación:"]/following-sibling::label')
+    if not desc_det_anuncio: 
+        desc_det_anuncio = get_text_by_xpath(xp='//label[text()="Descripción detallada del proyecto de convocatoria:"]/following-sibling::label')
     try:
         num_uc = unidad_comp.split(" ", 1)[0]
         nom_uc = unidad_comp.split(" ", 1)[1]
@@ -354,10 +360,27 @@ def get_page_prices():
         num_uc = ""
         nom_uc = unidad_comp
 
-    #Fecha y hora límite para envío de aclaraciones a través de CompraNet:
+    #Fecha y hora límite para envío de aclaraciones a través de CompraNet: #JC https://upcp-compranet.hacienda.gob.mx/sitiopublico/#/sitiopublico/detalle/2635437a35a6460c916295a9458d5ed1/proyecto
     fecha_presentacion = get_text_by_xpath(xp='//label[text()="Fecha y hora de presentación y apertura de proposiciones:"]/following-sibling::label')
+    if not fecha_presentacion:
+        fecha_presentacion = get_text_by_xpath(xp='//label[text()="Fecha y hora límite para recepción de comentarios:"]/following-sibling::label')
+    
     # Fecha y hora de publicación:
     fecha_pub = get_text_by_xpath(xp='//label[text()="Fecha y hora de publicación:"]/following-sibling::label')
+    if fecha_pub:
+        try:
+            fecha_pub = datetime.strptime(fecha_pub, "%d/%m/%Y %H:%M").strftime("%d/%m/%Y %H:%M")
+        except:
+            print(f"Error formateando la fecha {fecha_pub} de la op:\n{uri}")
+            fecha_pub = today
+    else:
+        # Fecha y hora de publicación del proyecto de convocatoria:
+        fecha_pub = get_text_by_xpath(xp='//label[text()="Fecha y hora de publicación del proyecto de convocatoria:"]/following-sibling::label')
+        try:
+            fecha_pub = datetime.strptime(fecha_pub, "%d/%m/%Y %H:%M").strftime("%d/%m/%Y %H:%M")
+        except:
+            print(f"Error formateando la fecha {fecha_pub} de la op:\n{uri}")
+            fecha_pub = today
         
     # --ECONOMICOS--
     economicos_list = []
@@ -377,8 +400,8 @@ def get_page_prices():
             clave_cucop = col[2].text
             desc_cucop = col[3].text
             desc_det = col[4].text
-            unidades_medida = col[5].text
             #Esta columna algunas pocas veces no viene
+            unidades_medida = col[5].text if len(col)>5 else ""
             cantidad_solicitada = col[6].text if len(col)>6 else ""
             #Busca un patron de 3 o 4 digitos, punto, 3 o 4 digitos, punto,3 o 4 digitos, y desues otros 2 digitos opcionales
             claves_compendio = re.findall(r"\d{3,4}.{1}\d{3,4}.{1}\d{3,4}.?\d{0,2}", desc_cucop)#CUCOP
@@ -389,6 +412,7 @@ def get_page_prices():
             keywords_finded = [w for w in keywords if w in desc]
             if keywords_finded:
                 is_alert_for_keywords = ",".join(keywords_finded)
+                print_w(is_alert_for_keywords)
             else:
                 is_alert_for_keywords = False
 
@@ -473,14 +497,15 @@ def scrape_page(page_numb):
         try:
             economic_list = get_page_prices()
         except Exception as e:
-            print(f"  fallo obtención de conomicos, error: {e}")
+            print_e(f"  fallo obtención de conomicos, error: {e}")
+            economic_list = False
             driver.save_screenshot(f"./{str(page_numb)}_{i}_error.png")
         
         # Extrae información de concluidos.csv
         try:
             new_row = get_page_info()
         except Exception as e:
-            print(f"  error: {e}")
+            print_e(f"  error: {e}")
             new_row['dependencia'] = "Error:::"
             driver.save_screenshot(f"./{str(page_numb)}_{i}_error.png")
 
@@ -498,7 +523,7 @@ def scrape_page(page_numb):
                 df.to_csv(economicos_file_name, index=False, header=False, encoding='utf-8', mode='a')
                 print("  SE EXTRAJO Y GUARDÓ INFORMACIÓN DE ECONOMICOS.")
             else:
-                print("  ", economic_list)
+                print_e("  ", economic_list)
             
             #agrega el numero de procedimiento para evitar repetirlo.s
             num_proc_added.append(new_row['num_proc'])
