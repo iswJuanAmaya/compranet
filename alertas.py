@@ -27,13 +27,32 @@ def send_email(subject, body, sender, recipients, password):
     msg = MIMEMultipart('alternative')
     msg['Subject'] = subject
     msg['From'] = sender
-    msg['To'] = 'iswjuanamaya@gmail.com'
-    msg['Cco'] = ',gustavo.gilramos@gmail.com'
+    msg['To'] = 'norma.ortiz@edenred.com'
+    msg['Cco'] = 'iswjuanamaya@gmail.com,gustavo.gilramos@gmail.com'
 
     # añade @body como el cuerpo del correo, con el html renderizado.
     part2 = MIMEText(body, 'html')  
     msg.attach(part2)
 
+    smtp_server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+    smtp_server.login(sender, password)
+    smtp_server.sendmail(sender, recipients, msg.as_string())
+    smtp_server.quit()
+
+
+def send_weekly_email(subject, body, sender, recipients, password):
+    """Envía un correo electrónico con el cuerpo y el asunto especificados. """
+    msg = MIMEMultipart('alternative')
+    msg['Subject'] = subject
+    msg['From'] = sender
+    msg['To'] = 'norma.ortiz@edenred.com,alfredo.gonzalez@edenred.com'
+    msg['Cco'] = 'iswjuanamaya@gmail.com,gustavo.gilramos@gmail.com'
+
+    # añade @body como el cuerpo del correo, con el html renderizado.
+    part2 = MIMEText(body, 'html')  
+    msg.attach(part2)
+
+    recipients.append("alfredo.gonzalez@edenred.com")
     smtp_server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
     smtp_server.login(sender, password)
     smtp_server.sendmail(sender, recipients, msg.as_string())
@@ -190,7 +209,8 @@ def generate_df_to_fill_body(df:pd.DataFrame, tipo:str) -> pd.DataFrame:
                 (today_datetime - timedelta(3)).strftime("%d/%m/%Y"),
                 (today_datetime - timedelta(4)).strftime("%d/%m/%Y"),
                 (today_datetime - timedelta(5)).strftime("%d/%m/%Y"),
-                (today_datetime - timedelta(6)).strftime("%d/%m/%Y")
+                (today_datetime - timedelta(6)).strftime("%d/%m/%Y"),
+                (today_datetime - timedelta(7)).strftime("%d/%m/%Y")
             ]
         
         #selecciona las oportunidades escrapeadas sabado, domingo y lunes y que tengan alerta
@@ -254,7 +274,7 @@ def main():
     """
     global sender, recipients, password, today, today_datetime
     sender = "gustavo@sintetiqai.com"
-    recipients = ["iswjuanamaya@gmail.com", "gustavo.gilramos@gmail.com"]#, "dss.tisalud@gmail.com"
+    recipients = ["norma.ortiz@edenred.com", "iswjuanamaya@gmail.com", "gustavo.gilramos@gmail.com"]#, "dss.tisalud@gmail.com"
     password = "dkalldlzavstssga" 
     today_datetime = date.today()
     today = date.today().strftime("%d/%m/%Y")
@@ -294,7 +314,7 @@ def main():
                 print(f"enviando {cant_alertas} alertas")
                 body_html_sem = generate_body(nuevas_alertas, msg)
                 subject = "Resumen de oportunidades semanal"
-                send_email(subject, body_html_sem, sender, recipients, password)
+                send_weekly_email(subject, body_html_sem, sender, recipients, password)
 
             else:
                 print("no hay alertas el día de hoy")
