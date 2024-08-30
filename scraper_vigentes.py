@@ -497,7 +497,7 @@ def scrape_page(page_numb):
         try:
             economic_list = get_page_prices()
         except Exception as e:
-            print_e(f"  fallo obtención de conomicos, error: {e}")
+            print_e(f"  fallo obtención de economicos, error: {e}")
             economic_list = False
             driver.save_screenshot(f"./{str(page_numb)}_{i}_error.png")
         
