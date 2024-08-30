@@ -27,13 +27,14 @@ def send_email(subject, body, sender, recipients, password):
     msg = MIMEMultipart('alternative')
     msg['Subject'] = subject
     msg['From'] = sender
-    msg['To'] = 'norma.ortiz@edenred.com'
+    msg['To'] = 'norma.ortiz@edenred.com,alfredo.gonzalez@edenred.com'
     msg['Cco'] = 'iswjuanamaya@gmail.com,gustavo.gilramos@gmail.com'
 
     # añade @body como el cuerpo del correo, con el html renderizado.
     part2 = MIMEText(body, 'html')  
     msg.attach(part2)
-
+    
+    recipients.append("alfredo.gonzalez@edenred.com")
     smtp_server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
     smtp_server.login(sender, password)
     smtp_server.sendmail(sender, recipients, msg.as_string())
