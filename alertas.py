@@ -30,7 +30,7 @@ def send_email(subject, body, sender, recipients, password):
     msg['To'] = 'norma.ortiz@edenred.com,alfredo.gonzalez@edenred.com'
     msg['Cco'] = 'iswjuanamaya@gmail.com,gustavo.gilramos@gmail.com'
 
-    # añade @body como el cuerpo del correo, con el html renderizado.
+    # añade @body como el cuerpo del correo, con el html renderizado .
     part2 = MIMEText(body, 'html')  
     msg.attach(part2)
     
